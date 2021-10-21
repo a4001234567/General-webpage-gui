@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+<style>
+.grid-container{
+	display:grid;
+	grid-template-columns:25% 25% 25% 25%;
+	grid-gap:10px;
+	padding:20px
+}
+.grid-container >div{
+	background-color:#804000;
+	text-align:center;
+	padding:10px 10px;
+	font-size:20px;
+	border-style:outset;
+	border-color:#804000;
+}
+input[type=text] {
+    width: 60%;
+    padding: 0 5px;
+    height: 20px;
+    border: inset #f2f2f2;
+    background: #f6f6f6;
+    color: #202124;
+    font-size: 15px;
+    line-height: 15px;
+    border-radius: 5px;
+    vertical-align:bottom;
+}
+input[type=button]{
+	width:30%;
+	border-radius:20px;
+	border: outset;
+	line-height:15px;
+	height:25px;
+	font-size:15px;
+	padding:0 5px;
+	vertical-align:bottom;
+}
+img{
+	max-width:95%;
+	border-style:inset;
+	align:center;
+}
+body{
+	background-color:#206520;
+}
+</style>
+	<script>
+		var list = [{0}];
+		function process(id){
+			var x = document.getElementById(id);
+			if(x.value == list[Number(id)]){
+				alert('correct');
+			}else{
+				alert('wrong');
+			}
+			x.value='';
+			document.getElementById('d'+id).style["background-color"]="green";
+			document.getElementById('d'+id).style["border-color"]="green"
+		}
+	</script>
+		<title>MYTH OF LIFE</title>
+	</head>
+	<body>
+		<h1 text-align="center" align="center" style="color:#ffff20;text-shadow:#ffff20 0px 0px 2px;font-size:50px;">谜语</h1>
+		<div class="grid-container">
+			{1}
+		</div>
+	</body>
+</html>
