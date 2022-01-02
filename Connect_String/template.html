@@ -1,1 +1,154 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<html>
+<body>
+<script>
+var element_list = [];
+// Rect X Y W H color
+// Drawing a rectangle with its upper-left corner at the position x,y, with its size w*h, filled with color
+function rect(X,Y,W,H,color){
+	var t=document.createElement("div");
+	t.style.position="absolute";
+	t.style.left=X+'px';
+	t.style.top=Y+'px';
+	t.style.width=W+'px';
+	t.style.height=H+'px';
+	t.style.backgroundColor=color;
+	document.body.appendChild(t);
+	return t;
+}
+// Circ X Y R color
+// Drawing a circle with its center at X+R,Y+R, filled with color
+function circ(X,Y,r,color){
+	var t=document.createElement("div");
+	t.style.position="absolute";
+	t.style.left=X+'px';
+	t.style.top=Y+'px';
+	t.style.width=2*parseInt(r)+'px';
+	t.style.height=2*parseInt(r)+'px';
+	t.style.borderRadius=r+'px';
+	t.style.backgroundColor=color;
+	document.body.appendChild(t);
+	return t;
+}
+// CLRS
+// clear all drawn object
+function clrs(){
+	for (var i=0;i<element_list.length;++i){
+		var temp = element_list[i];
+		temp.remove();
+	}
+	element_list=[];
+	return null;
+}
+// Text X Y size color content
+// Display content at X,Y with size and color
+function text(X,Y,size,color,content){
+	var cont = document.createElement("div");
+	cont.style.position="absolute";
+	cont.style.left=X+'px';
+	cont.style.top=Y+'px';
+	cont.style.color=color;
+	cont.style.fontSize=size+'px';
+	var t = document.createTextNode(content);
+	cont.appendChild(t)
+	document.body.appendChild(cont);
+	return cont;
+}
+// Tri X Y L R H theta color
+// Draw a triangle
+function tri(X,Y,L,R,H,theta,color){
+	var t=document.createElement("div");
+	t.style.position="absolute";
+	t.style.left=X+'px';
+	t.style.top=Y+'px';
+	t.style.borderBottom=H+"px solid "+color;
+	t.style.borderLeft=L+"px solid transparent";
+	t.style.borderRight=R+"px solid transparent";
+	t.style.webkitTransform = "rotate("+theta+"deg)";
+	t.style.mozTransform = "rotate("+theta+"deg)";
+	t.style.msTransform = "rotate("+theta+"deg)";
+	t.style.oTransform = "rotate("+theta+"deg)";
+	t.style.transform = "rotate("+theta+"deg)";
+	document.body.appendChild(t);
+	return t;
+}
+// Title msg
+// for changing the title of the webpage to {msg}
+function title(msg){
+	document.title = msg;
+	return null;
+}
+// Timer t
+// Post a "BOOK" request after t milliseconds
+function timer_t(period){
+	setTimeout(function(){post("BOOK");},period);
+}
+//process all the commands by using functions above
+function apply_commands(commands){
+	for (var i=0;i<commands.length;++i){
+		var command=commands[i];
+		var type=command[0];
+		switch(type){
+			case "Rect":
+				element_list.push(rect(command[1][0],command[1][1],command[1][2],command[1][3],command[1][4]));
+				break;
+			case "Circ":
+				element_list.push(circ(command[1][0],command[1][1],command[1][2],command[1][3]));
+				break;
+			case "CLRS":
+				clrs();
+				break;
+			case "Text":
+				element_list.push(text(command[1][0],command[1][1],command[1][2],command[1][3],command[1][4]));
+				break;
+			case "Tri":
+				element_list.push(tri(command[1][0],command[1][1],command[1][2],command[1][3],command[1][4],command[1][5],command[1][6]));
+				break;
+			case "Alert":
+				alert(command[1][0]);
+				break;
+			case "Title":
+				title(command[1][0]);
+				break;
+			case "Timer":
+				timer_t(parseInt(command[1][0]));
+				break;
+			case "Prompt":
+				var recv = prompt(command[1][0]);
+				post("Prompt "+recv);
+				break;
+		}
+	}
+}
+// Listen for keyboard event
+document.addEventListener("keydown",function(keyevent){post("Key "+keyevent.keyCode);});
+// Listen for mouse event
+document.addEventListener("click", function(event){post("Click "+event.clientX+" "+event.clientY);var k=[] ; k.push(1);k.pop();});	
+// Listen for window size's changes
+// Predefined W and H ensured that the first post request would be Update W H
+var preW=0, preH=0;
+function bus(){
+	var wWidth=window.innerWidth,wHeight=window.innerHeight;
+	if (preW != wWidth | preH != wHeight){
+		post("Update "+wWidth+" "+wHeight);
+		preW = wWidth;
+		preH = wHeight;
+	}
+}
+setInterval(bus,50);
+//function for sending request
+function post(contentsus){
+	var httpRequest = new XMLHttpRequest();
+	httpRequest.open("POST","/request",true);
+	httpRequest.send(contentsus);
+	httpRequest.onreadystatechange=function(){
+    	if(httpRequest.readyState == 4 && httpRequest.status == 200){
+        	apply_commands(JSON.parse(httpRequest.responseText));
+        }
+    };
+}
+</script>
+</body>
+</html>
 
